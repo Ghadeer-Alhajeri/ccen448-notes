@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Gadeer's Notes{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="{{ url_for('index') }}"><span class="brand-icon">N</span> Gadeer's Notes</a>
+    {% if g.user %}
+    <div class="account"><span>@{{ g.user.username }}</span>
+      <form method="post" action="{{ url_for('logout') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="button subtle" type="submit">Log out</button>
+      </form>
+    </div>
+    {% else %}<span class="top-label">A little space for your ideas</span>{% endif %}
+  </header>
+  <main>
+    {% for category, message in get_flashed_messages(with_categories=true) %}
+    <p role="status" class="message {{ category }}">{{ message }}</p>
+    {% endfor %}
+    {% block content %}{% endblock %}
+  </main>
+  <footer>Gadeer's Notes <span>·</span> CCEN448 Lab 6</footer>
+</body>
+</html>

@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Create account' if registering else 'Log in' }} · Gadeer's Notes{% endblock %}
+{% block content %}
+<section class="auth-layout">
+  <div class="intro">
+    <p class="eyebrow">YOUR IDEAS, KEPT TOGETHER</p>
+    <h1>Make room<br>for a new thought.</h1>
+    <p class="lede">Class notes, small discoveries, tomorrow's plans.<br>A quiet place to write them down.</p>
+    <div class="sample-note"><span class="note-label">A NOTE TO SELF</span><p>Big ideas often begin<br>with a small note.</p><span class="sample-line"></span></div>
+  </div>
+  <div class="auth-card">
+    <p class="eyebrow">{{ 'GET STARTED' if registering else 'YOUR PERSONAL NOTEBOOK' }}</p>
+    <h2>{{ 'Create your account' if registering else 'Welcome back' }}</h2>
+    <p class="muted">{{ 'Your notes will be saved to your account.' if registering else 'Log in to pick up where you left off.' }}</p>
+    <form method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label for="username">Username</label>
+      <input id="username" name="username" autocomplete="username" required minlength="3" maxlength="32" pattern="[A-Za-z0-9_]{3,32}" placeholder="e.g. gadeer" value="{{ request.form.get('username', '') }}">
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" autocomplete="{{ 'new-password' if registering else 'current-password' }}" required {% if registering %}minlength="10"{% endif %} maxlength="128" placeholder="{{ 'At least 10 characters' if registering else 'Enter your password' }}">
+      <button class="button primary full" type="submit">{{ 'Create account' if registering else 'Log in' }} <span aria-hidden="true">→</span></button>
+    </form>
+    <p class="switch">{{ 'Already have an account?' if registering else 'New here?' }} <a href="{{ url_for('login') if registering else url_for('register') }}">{{ 'Log in' if registering else 'Create an account' }}</a></p>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,30 @@
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: notes
+      POSTGRES_DB: notes
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Run python3 setup_env.py first}
+    volumes:
+      - notes_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U notes -d notes"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    # No published database port: PostgreSQL stays on the internal network.
+  web:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "${WEB_BIND:-0.0.0.0}:8000:8000"
+    environment:
+      SECRET_KEY: ${SECRET_KEY:?Run python3 setup_env.py first}
+      DATABASE_URL: postgresql+psycopg://notes:${POSTGRES_PASSWORD}@db:5432/notes
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+    depends_on:
+      db:
+        condition: service_healthy
+volumes:
+  notes_data:

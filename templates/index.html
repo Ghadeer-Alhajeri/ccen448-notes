@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="workspace-heading"><div><p class="eyebrow">YOUR PERSONAL NOTEBOOK</p><h1>My notes<span class="count">{{ notes|length }}</span></h1><p class="muted">A home for everything you want to remember.</p></div><span class="private-label">Only visible to you</span></section>
+<div class="workspace">
+  <section class="compose-card">
+    <h2>A fresh page</h2><p class="muted">What's on your mind?</p>
+    <form method="post" action="{{ url_for('add_note') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label for="title">Title</label><input id="title" name="title" required maxlength="120" placeholder="Give your note a title">
+      <label for="body">Your note</label><textarea id="body" name="body" required maxlength="10000" rows="8" placeholder="Start writing here…"></textarea>
+      <button class="button primary full" type="submit">Save note <span aria-hidden="true">+</span></button>
+    </form>
+  </section>
+  <section class="notes-grid" aria-label="Saved notes">
+    {% for note in notes %}
+    <article class="note-card">
+      <p class="note-label">{{ note.created_at.strftime('%d %b %Y') }}</p><h2>{{ note.title }}</h2><p class="note-body">{{ note.body }}</p>
+      <form method="post" action="{{ url_for('delete_note', note_id=note.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="delete-button" type="submit" aria-label="Delete {{ note.title }}">Delete note</button>
+      </form>
+    </article>
+    {% else %}
+    <div class="empty-state"><span class="empty-icon">+</span><h2>Your notebook starts here</h2><p>Write your first note using the form.<br>It will be here when you log back in.</p></div>
+    {% endfor %}
+  </section>
+</div>
+{% endblock %}
